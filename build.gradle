@@ -6,19 +6,21 @@ plugins {
 group 'STAdventursDice'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
+//sourceCompatibility = 11
 
 repositories {
     mavenCentral()
     maven {
         url = 'http://repo.maven.apache.org/maven2'
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.2'
     compile 'org.javacord:javacord:3.0.3'
+    compile 'org.discordbots:DBL-Java-Library:2.0.1'
 }
 
 jar {

@@ -1,17 +1,76 @@
 package com.tree.STAdventures;
 
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class STAdventuresBot implements MessageCreateListener {
+    int x = 0;
+    int amountOfPeopleRolled;
+
+    String[] Activity;
+
+
+    public STAdventuresBot(int rolled, DiscordApi api) {
+        amountOfPeopleRolled = rolled;
+        Activity = new String[2];
+        Activity[0] = "!sta help";
+
+
+        api.getThreadPool().getScheduler().scheduleAtFixedRate(()  ->     {
+            Activity[1] = "Commanding \" + api.getServers().size() + \" Servers!";
+
+
+            if(x == 0)
+                api.updateActivity("Commanding " + api.getServers().size() + " Servers!");
+            if(x == 1){
+                api.updateActivity("!sta help");
+            }
+
+             x++;
+            if(x >= Activity.length)
+                x = 0;
+
+
+        },0,1, TimeUnit.MINUTES);
+
+    }
+
+    private int getActivatyState() {
+        return x;
+    }
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
-        String message = event.getMessage().getContent();
+
+
+
+
+
+        String message = event.getMessage().getContent().toLowerCase();
         if(message.startsWith("!sta")) {
+
+
+            amountOfPeopleRolled++;
+
+
+
+            if(message.toLowerCase().contains("help")){
+                EmbedBuilder help = new EmbedBuilder();
+                help.setTitle("STA help");
+                help.addField("Main usage", "!sta [d20's] [d6's]");
+                help.addField("Discord link: ", " https://discord.gg/CrrDRRd");
+
+                help.setFooter("Created by: Tree#1111 ");
+                event.getChannel().sendMessage(help);
+            }
+
+
             message = message.replaceFirst("!sta","").trim();
             String[] diceS = message.split(" ");
             diceS[0] = diceS[0].trim();
@@ -25,7 +84,7 @@ public class STAdventuresBot implements MessageCreateListener {
 
 
             StringBuilder stringBuilder = new StringBuilder();
-            String beginning = event.getMessage().getAuthor().asUser().get().getMentionTag() + " Rolled " + d20s+"D20's & " + d6s + " Challenge Dice.\n";
+            String beginning = event.getMessage().getAuthor().asUser().get().getName() + " Rolled " + d20s+"D20's & " + d6s + " Challenge Dice.\n";
 
             stringBuilder.append("[");
             for (int i = 0; i < d20s; i++) {
@@ -47,8 +106,11 @@ public class STAdventuresBot implements MessageCreateListener {
             }
 
             String d6sNumber = Arrays.toString(d6srolls);
-
-            event.getChannel().sendMessage(beginning + "D20's: "+ resultOf20s + " Challenge: Dice: " + d6sNumber + " " + stringBuilder.toString());
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(beginning);
+            embedBuilder.addField("Results:", "D20's: "+ resultOf20s + " Challenge: Dice: " + d6sNumber + " " + stringBuilder.toString());
+            event.getChannel().sendMessage(embedBuilder);
+            //event.getChannel().sendMessage(beginning + "D20's: "+ resultOf20s + " Challenge: Dice: " + d6sNumber + " " + stringBuilder.toString());
         }
     }
 
