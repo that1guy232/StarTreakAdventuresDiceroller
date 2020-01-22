@@ -13,8 +13,9 @@ public class Main {
 
 
         api.getServers().forEach(server -> System.err.println(server.getName() + "amount of users: " + server.getMemberCount()));
-        System.err.println("test");
-        api.addListener(new STAdventuresBot(0,api));
+
+        api.addListener(new STAdventuresBot(api));
+        api.addListener(new ActivityUpdater(api));
 
     }
 }
