@@ -3,6 +3,7 @@ package com.tree.STAdventures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.activity.ActivityType;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
@@ -45,7 +46,20 @@ public class ActivityUpdater implements MessageCreateListener {
             System.err.println(activities.size());
             String currentActivity = activities.get(placeInActivites).replace("%servers",String.valueOf(api.getServers().size()));
 
-            api.updateActivity(currentActivity);
+            if(currentActivity.startsWith("%watching")){
+                currentActivity = currentActivity.replace("%watching","");
+                api.updateActivity(ActivityType.WATCHING, currentActivity);
+            }else if(currentActivity.startsWith("%streaming")){
+                currentActivity = currentActivity.replace("%streaming","");
+                api.updateActivity(ActivityType.STREAMING, currentActivity);
+            }else if(currentActivity.startsWith("%listening")){
+                currentActivity = currentActivity.replace("%listening","");
+                api.updateActivity(ActivityType.LISTENING,currentActivity);
+            }else {
+                api.updateActivity(ActivityType.PLAYING,currentActivity);
+            }
+
+
 
             placeInActivites++;
             if(placeInActivites >= activities.size()){
